@@ -6,53 +6,77 @@
 """
 # Do the imports
 from bs4 import BeautifulSoup as soup
-from urllib.request import urlopen as uReq
-import urllib.request
-
+import requests
 
 # create the scraper class
 class classifiedScraper(object):
+
+
 # Initialization:
 # run your functions here or apply to a global variable object
 # print len and the like to the object can be applied here
+
+
     def __init__(self):
         self._scraper()
         self._file_handler()
-# leaving the print statement as a final error check or Done!
-        print(len(job_anchor_list))
 
+# leaving the print statement as a final error check or Done!
+        #print(len(job_anchor_list))
 
 # Scraper function to be used on __init__
     def _scraper(self,*args,**kwargs):
-        global job_anchor_list
-
+        global page_soup
+        global category_list
         try:
-            # This html parser. Lxml and xpath may find the div or
-            # tbody or table where both job and company are found
-            # jobs are Ver14nounder and company is Ver12C span style8 and
-            # Ver12nounder If I can find the way to acces the main div
-            # correctly I can do a for loop for each and then join
 
-            opener = urllib.request.build_opener()
-            opener.addheaders = [('User-agent','Mozilla/5.0')]
+            headers = requests.utils.default_headers()
+            headers.update({'User-Agent': 'Mozilla/5.0'})
 
-            # Change this line where pueblo to your municipality, if where you live
-            # has a space (San Juan) would be replaced by a plus(+) sign  you can go as far as UDJobsListing.asp? but not sure if it would
-            # be to general and require to scrape multpiple pages within the offset value. If you're interested in multiple pages or all Jobs
-            # you may need to go and scrape multiple responses on the pages and
-            # apply soup() to all of them
+            # Made pueblo a variable
+            # This is here the dictionary imports belong
+            # get user input somehow to get the variables to format.
+            pueblo = "Humacao"
 
-            response = opener.open("https://www.clasificadosonline.com/UDJobsListing.asp?JobsCat=%25&Pueblo=Humacao&txkey=&Submit=Buscar+-+GO")
-            html_contents = response.read()
-            page_soup = soup(html_contents,"html.parser")
-            job_anchor_list = page_soup.findAll("td",{"class":"Ver14nounder"})
+            # Url Variables
+            general_url = "https://www.clasificadosonline.com/UDJobsListing.asp?"
+            search_page_url = "https://www.clasificadosonline.com/Jobs.asp"
+
+            # Job Category List
+            # integrate pueblo values after looking in the dictionary
+            # dictionary portion not yet done.
+
+            jobs_cat = "JobsCat=%{}".format(25)
+            pueblo_cat = "&Pueblo={}".format(pueblo)
+            txkey_cat = "&txkey={}".format("")
+            submit_cat = "&Submit=Buscar+-+GO"
+            offset_cat = "&offset=".format("")
+
+            # Job search url variable, have tried to do some other type of string
+            # formatting but this is the best I could do \ is not working and
+            # returning empty objects
+            job_search_url = (general_url + jobs_cat + pueblo_cat + txkey_cat + submit_cat + offset_cat)
+
+            # Requests module stuff scraping done with soup
+            response = requests.get(url),headers=headers)
+            page_soup = soup(response.content,"html.parser")
+
+            category_list = page_soup.find_all("select",{"class":"Ver14"})
+
+            # Stuff yet to implement here for checks and usable Variables
+
+            # print(category_list)
+            # pueblo_list =
+            # job_anchor_list = page_soup.findAll("td",{"class":"Ver14nounder"})
 
             response.close()
 
         except Exception as e:
             print("There was an error: ",e)
+
 # File Handler function
     def _file_handler(self,*args,**kwargs):
+
 # If you want to use some database use it here.I am using a
 # text file because the list hardly ever reaches 50 and I want the latest
 # anyway. However this can be changed into a database that would use
@@ -62,15 +86,16 @@ class classifiedScraper(object):
             f = open(file,"w")
             Headers = "Company,Job \n"
             f.write(Headers)
-            for item in job_anchor_list:
+            for item in category_list:
                 try:
                     global jobs
-                    jobs = item.find("a",{"class":"Ver14nounder"}).get_text()
-                    f.write(jobs + '\n')
+                    jobs = item.find_all(["option"])
+                    for item in jobs:
+                        item.find(["value"])
 
+                    f.write(str(jobs))
                 except Exception as e:
                     print("There was an error: ",e)
-
         except Exception as e:
             print("There was an error:",e)
 # running the class
