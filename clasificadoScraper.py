@@ -10,12 +10,13 @@ from bs4 import BeautifulSoup as soup
 import requests
 
 # create the scraper class
-class classifiedScraper(object):
+
 
 # Initialization:
 # run your functions here or apply to a global variable object
 # print len and the like to the object can be applied here
 # Init right now only got two functions the scraper and the file handler (writer)
+class classifiedScraper(object):
     def __init__(self):
         self._scraper()
         self._file_handler()
@@ -23,22 +24,42 @@ class classifiedScraper(object):
 # leaving the print statement as a final error check or Done! This outputs the
 # complete job name. There may be duplicate here, so it would be good to do an
 # if / else loop somwhere
-        print(len(job_list))
+        print("Script Finished!")
 
 # Scraper function to be used on __init__
     def _scraper(self,*args,**kwargs):
         global job_list
 
         try:
+# header definitions for robots.txt COMPLIANCE
             headers = requests.utils.default_headers()
             headers.update({'User-Agent': 'Mozilla/5.0'})
+# take the values from the dictionary file and make a list
             pueblo_list = [x for x in pueblos.values()]
-            # Url Variables
+
+# Url Variables
             general_url = "https://www.clasificadosonline.com"
             general_job_url = "https://www.clasificadosonline.com/UDJobsListing.asp?"
             search_page_url = "https://www.clasificadosonline.com/Jobs.asp"
-            try:
-                job_list = []
+            job_list = []
+
+            def single_page_parser():
+                global page_soup
+
+                jobs_cat = "JobsCat=%{}".format(25)
+                txkey_cat = "&txkey={}".format("")
+                # Change this into desired index
+                pueblo_cat = "&Pueblo={}".format(pueblo_list[45])
+                submit_cat = "&Submit=Buscar+-+GO"
+                offset_cat = "&offset=".format("")
+                job_search_url = (general_job_url+jobs_cat+pueblo_cat+txkey_cat+submit_cat+offset_cat)
+                response = requests.get(job_search_url,headers=headers)
+                page_soup = soup(response.content,"html.parser")
+                return page_soup
+                response.close()
+
+            def multi_page_parser(): # use with caution, may break if heavy usage
+                global page_soup
                 for index, name in enumerate(pueblo_list,start=0):
                     jobs_cat = "JobsCat=%{}".format(25)
                     txkey_cat = "&txkey={}".format("")
@@ -46,38 +67,35 @@ class classifiedScraper(object):
                     submit_cat = "&Submit=Buscar+-+GO"
                     offset_cat = "&offset=".format("")
                     job_search_url = (general_job_url+jobs_cat+pueblo_cat+txkey_cat+submit_cat+offset_cat)
-
                     response = requests.get(job_search_url,headers=headers)
                     page_soup = soup(response.content,"html.parser")
-
-                    # Applying the soup to some variables
-                    job_anchor_list = page_soup.find_all("td",{"class":"Ver14nounder"})
-                    category_list = page_soup.find_all("select",{"class":"Ver14"})
-
-                    for item in job_anchor_list:
-                        try:
-                            jobs_anchor = item.find("a",{"class":"Ver14nounder"})
-                            href_list = jobs_anchor.get("href")
-                            job_url = general_url + href_list
-                            jobs = jobs_anchor.get_text()
-                            if jobs or job_url not in job_list:
-                                job_list.append(jobs)
-                                job_list.append(job_url)
-
-                            else: continue
-                        except Exception as e:
-                            print("There was an error: ",e)
-
-                    # Check & close the response
-                    print("Soup done!", name)
+                    return page_soup
                     response.close()
 
-            except Exception as e:
-                print("There was an error",e)
+            # Applying the soup to some variables
+            single_page_parser()
+            job_anchor_list = page_soup.find_all("td",{"class":"Ver14nounder"})
+            category_list = page_soup.find_all("select",{"class":"Ver14"})
 
-            # Job search url variable, have tried to do some other type of string
-            # formatting but this is the best I could do \ is not working and
-            # returning empty objects
+            for item in job_anchor_list:
+                try:
+                    jobs_anchor = item.find("a",{"class":"Ver14nounder"})
+                    href_list = jobs_anchor.get("href")
+                    job_url = general_url + href_list
+                    jobs = jobs_anchor.get_text()
+
+                    if jobs or job_url not in job_list:
+                        job_list.append(jobs)
+                        job_list.append(job_url)
+
+                    else: continue
+
+                except Exception as e:
+                        print("There was an error: ",e)
+
+                    # Check & close the response
+            print("Soup done!")
+
         except Exception as e:
             print("There was an error: ",e)
 
@@ -89,16 +107,19 @@ class classifiedScraper(object):
 # time imports and synchronize with the scraper.
         try:
             file = "jobList.txt"
-            f = open(file,"w",encoding="utf-8")
-            Headers = "Job, Href \n"
-            f.write(Headers)
+            f = open(file,"a+",encoding="utf-8")
+            read_file = open(file,"r",encoding="utf-8")
+            file_contents = read_file.read()
             for item in job_list:
-                try:
+                if item not in file_contents:
                     f.write(item + "\n")
-                except Exception as e:
-                    print("There was an error: ",e)
+                    print("New job!", item)
 
-            f.close()
+            Headers = "Job, Href \n"
+            for line in read_file.readlines():
+                if item not in line:
+                    f.write(item + "\n")
+                    print("New Job!",item)
 
         except Exception as e:
             print("There was an error:",e)
