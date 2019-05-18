@@ -34,9 +34,9 @@ class classifiedScraper(object):
             headers.update({'User-Agent': 'Mozilla/5.0'})
             pueblo_list = [x for x in pueblos.values()]
             # Url Variables
-            general_url = "https://www.clasificadosonline.com/UDJobsListing.asp?"
+            general_url = "https://www.clasificadosonline.com"
+            general_job_url = "https://www.clasificadosonline.com/UDJobsListing.asp?"
             search_page_url = "https://www.clasificadosonline.com/Jobs.asp"
-
             try:
                 job_list = []
                 for index, name in enumerate(pueblo_list,start=0):
@@ -45,7 +45,7 @@ class classifiedScraper(object):
                     pueblo_cat = "&Pueblo={}".format(name)
                     submit_cat = "&Submit=Buscar+-+GO"
                     offset_cat = "&offset=".format("")
-                    job_search_url = (general_url+jobs_cat+pueblo_cat+txkey_cat+submit_cat+offset_cat)
+                    job_search_url = (general_job_url+jobs_cat+pueblo_cat+txkey_cat+submit_cat+offset_cat)
 
                     response = requests.get(job_search_url,headers=headers)
                     page_soup = soup(response.content,"html.parser")
@@ -56,9 +56,14 @@ class classifiedScraper(object):
 
                     for item in job_anchor_list:
                         try:
-                            jobs = item.find("a",{"class":"Ver14nounder"}).get_text()
-                            if jobs not in job_list:
+                            jobs_anchor = item.find("a",{"class":"Ver14nounder"})
+                            href_list = jobs_anchor.get("href")
+                            job_url = general_url + href_list
+                            jobs = jobs_anchor.get_text()
+                            if jobs or job_url not in job_list:
                                 job_list.append(jobs)
+                                job_list.append(job_url)
+
                             else: continue
                         except Exception as e:
                             print("There was an error: ",e)
@@ -68,7 +73,7 @@ class classifiedScraper(object):
                     response.close()
 
             except Exception as e:
-                print("There is an error",e)
+                print("There was an error",e)
 
             # Job search url variable, have tried to do some other type of string
             # formatting but this is the best I could do \ is not working and
@@ -85,13 +90,15 @@ class classifiedScraper(object):
         try:
             file = "jobList.txt"
             f = open(file,"w",encoding="utf-8")
-            Headers = "Job \n"
+            Headers = "Job, Href \n"
             f.write(Headers)
             for item in job_list:
                 try:
                     f.write(item + "\n")
                 except Exception as e:
                     print("There was an error: ",e)
+
+            f.close()
 
         except Exception as e:
             print("There was an error:",e)
