@@ -11,28 +11,28 @@ import requests
 
 # create the scraper class
 class classifiedScraper(object):
+
 # Initialization:
 # run your functions here or apply to a global variable object
 # print len and the like to the object can be applied here
-# Init right now only got two functions
-
+# Init right now only got two functions the scraper and the file handler (writer)
     def __init__(self):
         self._scraper()
         self._file_handler()
 
-# leaving the print statement as a final error check or Done!
+# leaving the print statement as a final error check or Done! This outputs the
+# complete job name. There may be duplicate here, so it would be good to do an
+# if / else loop somwhere
         print(len(job_list))
 
 # Scraper function to be used on __init__
     def _scraper(self,*args,**kwargs):
-
         global job_list
 
         try:
             headers = requests.utils.default_headers()
             headers.update({'User-Agent': 'Mozilla/5.0'})
             pueblo_list = [x for x in pueblos.values()]
-
             # Url Variables
             general_url = "https://www.clasificadosonline.com/UDJobsListing.asp?"
             search_page_url = "https://www.clasificadosonline.com/Jobs.asp"
@@ -49,15 +49,20 @@ class classifiedScraper(object):
 
                     response = requests.get(job_search_url,headers=headers)
                     page_soup = soup(response.content,"html.parser")
+
                     # Applying the soup to some variables
                     job_anchor_list = page_soup.find_all("td",{"class":"Ver14nounder"})
                     category_list = page_soup.find_all("select",{"class":"Ver14"})
+
                     for item in job_anchor_list:
                         try:
                             jobs = item.find("a",{"class":"Ver14nounder"}).get_text()
-                            job_list.append(jobs)
+                            if jobs not in job_list:
+                                job_list.append(jobs)
+                            else: continue
                         except Exception as e:
                             print("There was an error: ",e)
+
                     # Check & close the response
                     print("Soup done!", name)
                     response.close()
@@ -68,7 +73,6 @@ class classifiedScraper(object):
             # Job search url variable, have tried to do some other type of string
             # formatting but this is the best I could do \ is not working and
             # returning empty objects
-
         except Exception as e:
             print("There was an error: ",e)
 
@@ -77,10 +81,10 @@ class classifiedScraper(object):
 # If you want to use some database use it here.I am using a
 # text file because the list hardly ever reaches 50 and I want the latest
 # anyway. However this can be changed into a database that would use
-# time imports and synchronize with the scraper
+# time imports and synchronize with the scraper.
         try:
             file = "jobList.txt"
-            f = open(file,"w")
+            f = open(file,"w",encoding="utf-8")
             Headers = "Job \n"
             f.write(Headers)
             for item in job_list:
