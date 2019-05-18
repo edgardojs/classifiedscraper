@@ -9,13 +9,11 @@ from dictionary import *
 from bs4 import BeautifulSoup as soup
 import requests
 
-# create the scraper class
-
-
+# create the scraper class and
 # Initialization:
 # run your functions here or apply to a global variable object
-# print len and the like to the object can be applied here
 # Init right now only got two functions the scraper and the file handler (writer)
+
 class classifiedScraper(object):
     def __init__(self):
         self._scraper()
@@ -25,15 +23,14 @@ class classifiedScraper(object):
 # complete job name. There may be duplicate here, so it would be good to do an
 # if / else loop somwhere
         print("Script Finished!")
-
 # Scraper function to be used on __init__
     def _scraper(self,*args,**kwargs):
         global job_list
-
         try:
 # header definitions for robots.txt COMPLIANCE
             headers = requests.utils.default_headers()
             headers.update({'User-Agent': 'Mozilla/5.0'})
+
 # take the values from the dictionary file and make a list
             pueblo_list = [x for x in pueblos.values()]
 
@@ -45,11 +42,10 @@ class classifiedScraper(object):
 
             def single_page_parser():
                 global page_soup
-
                 jobs_cat = "JobsCat=%{}".format(25)
                 txkey_cat = "&txkey={}".format("")
-                # Change this into desired index
-                pueblo_cat = "&Pueblo={}".format(pueblo_list[45])
+                # Gets the value from pueblo list... maybe an enumerate here too?
+                pueblo_cat = "&Pueblo={}".format(pueblo_list[8])
                 submit_cat = "&Submit=Buscar+-+GO"
                 offset_cat = "&offset=".format("")
                 job_search_url = (general_job_url+jobs_cat+pueblo_cat+txkey_cat+submit_cat+offset_cat)
@@ -58,7 +54,7 @@ class classifiedScraper(object):
                 return page_soup
                 response.close()
 
-            def multi_page_parser(): # use with caution, may break if heavy usage
+            def multi_page_parser(): # use with caution, breaks with heavy usage do not abuse
                 global page_soup
                 for index, name in enumerate(pueblo_list,start=0):
                     jobs_cat = "JobsCat=%{}".format(25)
@@ -72,7 +68,10 @@ class classifiedScraper(object):
                     return page_soup
                     response.close()
 
-            # Applying the soup to some variables
+# Applying the soup to some variables change to multi_page_parser() uncomment multi_page_parser
+# and comment single_page_parser if you want to use the whole list
+
+            #multi_page_parser
             single_page_parser()
             job_anchor_list = page_soup.find_all("td",{"class":"Ver14nounder"})
             category_list = page_soup.find_all("select",{"class":"Ver14"})
