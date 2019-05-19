@@ -120,5 +120,6 @@ For now using control+f to get the desired town would get you to the list
 
 
 Output:
-![alt text](https://imgur.com/pY91fZL)
+![alt text](https://i.imgur.com/pY91fZL.png)
+
 jobList.txt should showcase the job name and page link. 
