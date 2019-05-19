@@ -3,8 +3,8 @@ Clasificadosonline.com is a popular webpage in Puerto Rico to look for jobs. Thi
 
 Required imports:
 
-BS4 (BeautifulSoup)
-requests
+* BS4 (BeautifulSoup)
+* requests
 
 Usage: 
 
@@ -120,5 +120,5 @@ For now using control+f to get the desired town would get you to the list
 
 
 Output:
-
+![alt text](https://imgur.com/pY91fZL)
 jobList.txt should showcase the job name and page link. 
