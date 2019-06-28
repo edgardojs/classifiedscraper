@@ -7,7 +7,7 @@ jobtype = {
 pueblos = {
             "Area Central":"Area+Central", "Area Este":"Area+Este", "Area Metro":"Area+Metro",
             "AreaNorte":"Area+Norte", "Area Oeste":"Area+Oeste", "Area Sur":"Area+Sur",
-            "Adjuntas":"Adjuntas", "Aguada":"Aguada", "":"Aguadilla":"Aguadilla",
+            "Adjuntas":"Adjuntas", "Aguada":"Aguada", "Aguadilla":"Aguadilla",
             "Aguas Buenas":"Aguas Buenas", "Aibonito":"Aibonito", "Anasco":"Anasco",
             "Arecibo":"Arecibo", "Arroyo":"Arroyo", "Barceloneta":"Barceloneta",
             "Barranquitas":"Barranquitas", "Bayamon":"Bayamon", "Cabo Rojo":"Cabo+Rojo",
