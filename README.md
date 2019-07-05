@@ -125,4 +125,6 @@ Output:
 
 ![alt text](https://i.imgur.com/pY91fZL.png)
 
-jobList.txt should showcase the job name and page link. 
+jobList.txt should showcase the job name and page link.
+
+[link text](https://www.youtube.com/playlist?list=PLgfDJWiTkuYv1AacFDM2cTH-QAF7otKcN "Watch the Youtube playlist to learn more about the scraper")
