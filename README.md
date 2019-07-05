@@ -127,4 +127,4 @@ Output:
 
 jobList.txt should showcase the job name and page link.
 
-[link text](https://www.youtube.com/playlist?list=PLgfDJWiTkuYv1AacFDM2cTH-QAF7otKcN "Watch the Youtube playlist to learn more about the scraper")
+[Watch the Youtube playlist to learn more about the scraper!](https://www.youtube.com/playlist?list=PLgfDJWiTkuYv1AacFDM2cTH-QAF7otKcN "Playlist")
